@@ -1,0 +1,21 @@
+# list the harmless indices of the $_SERVER array here:
+
+HTTP_ACCEPT_LANGUAGE
+HTTP_HOST
+SERVER_NAME
+SERVER_SOFTWARE
+PHP_AUTH_PW
+PHP_AUTH_TYPE
+PHP_AUTH_USER
+REMOTE_ADDR
+SCRIPT_FILENAME
+SCRIPT_NAME
+SCRIPT_URI
+
+# the following server variables might appear to be harmless
+# at first glance, but they can be dangerous
+
+# HTTP_REFERER
+# PHP_SELF
+# REQUEST_URI
+# QUERY_STRING

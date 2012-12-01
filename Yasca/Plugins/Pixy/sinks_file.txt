@@ -1,0 +1,19 @@
+# standard File sinks
+
+# format:
+# <functionName> = <parameter list>
+# - use only lowercase characters for the function's name
+# - the parameter list's entries are separated with :
+fopen = 0
+file = 0
+unlink = 0
+file_get_contents = 0
+readfile = 0
+file_put_contents = 0
+copy = 0:1
+rename = 0:1
+# maybe:
+#move_uploaded_file = 0:1
+
+# xyz = 0:1:3
+

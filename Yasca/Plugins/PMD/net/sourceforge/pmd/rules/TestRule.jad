@@ -1,0 +1,107 @@
+// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+// Source File Name:   TestRule.java
+
+package net.sourceforge.pmd.rules;
+
+import java.io.PrintStream;
+import java.util.*;
+import net.sourceforge.pmd.AbstractRule;
+import net.sourceforge.pmd.ast.*;
+import net.sourceforge.pmd.symboltable.MethodNameDeclaration;
+
+public class TestRule extends AbstractRule
+{
+
+    public TestRule()
+    {
+    }
+
+    private SimpleJavaNode getFirstParentOfType(SimpleJavaNode node, List typeList)
+    {
+        for(Iterator iterator = typeList.iterator(); iterator.hasNext(); System.err.println())
+        {
+            Class clazz = (Class)iterator.next();
+            System.err.print((new StringBuilder(String.valueOf(((ASTName)node.getFirstChildOfType(net/sourceforge/pmd/ast/ASTName)).getImage()))).append(" Checking ").append(clazz.getName()).append("...").toString());
+            SimpleJavaNode n = (SimpleJavaNode)node.getFirstParentOfType(clazz);
+            System.err.println((new StringBuilder("Got ")).append(n == null ? "[null]" : n.toString()).toString());
+            if(n != null && n.getImage() != null)
+            {
+                System.err.println("yes!");
+                return n;
+            }
+        }
+
+        return null;
+    }
+
+    private String getCurrentMethodName(SimpleJavaNode node)
+    {
+        SimpleJavaNode n = (SimpleJavaNode)node.getFirstParentOfType(net/sourceforge/pmd/ast/ASTConstructorDeclaration);
+        if(n != null)
+        {
+            n = (SimpleJavaNode)n.getFirstParentOfType(net/sourceforge/pmd/ast/ASTClassOrInterfaceDeclaration);
+            return n.getImage();
+        }
+        n = (SimpleJavaNode)node.getFirstParentOfType(net/sourceforge/pmd/ast/ASTMethodDeclaration);
+        if(n != null)
+            return ((ASTMethodDeclaration)n).getMethodName();
+        else
+            return "Unknown";
+    }
+
+    private boolean isMethodCall(ASTPrimaryPrefix node)
+    {
+        if(!node.containsChildOfType(net/sourceforge/pmd/ast/ASTName))
+            return false;
+        net.sourceforge.pmd.ast.Node n = node.getNthParent(1);
+        if(n instanceof SimpleJavaNode)
+            return ((SimpleJavaNode)n).containsChildOfType(net/sourceforge/pmd/ast/ASTPrimarySuffix);
+        else
+            return false;
+    }
+
+    public Object visit(ASTPrimaryPrefix node, Object data)
+    {
+        if(node.containsChildOfType(net/sourceforge/pmd/ast/ASTName))
+        {
+            if(!isMethodCall(node))
+                return super.visit(node, data);
+            ASTName name = (ASTName)node.getFirstChildOfType(net/sourceforge/pmd/ast/ASTName);
+            ASTClassOrInterfaceDeclaration clazz = (ASTClassOrInterfaceDeclaration)node.getFirstParentOfType(net/sourceforge/pmd/ast/ASTClassOrInterfaceDeclaration);
+            String met = getCurrentMethodName(node);
+            methodCalls.add((new StringBuilder(String.valueOf(clazz.getImage()))).append(".").append(met).append(".").append(name.getImage()).append("()").toString());
+            methodMap.put((new StringBuilder(String.valueOf(clazz.getImage()))).append(".").append(met).toString(), name.getImage());
+            System.err.println((new StringBuilder("Method Calls: ")).append(methodCalls.toString()).toString());
+        }
+        return super.visit(node, data);
+    }
+
+    public Object visit(ASTMethodDeclarator node, Object data)
+    {
+        MethodNameDeclaration m = new MethodNameDeclaration(node);
+        ASTClassOrInterfaceDeclaration clazz = (ASTClassOrInterfaceDeclaration)node.getFirstParentOfType(net/sourceforge/pmd/ast/ASTClassOrInterfaceDeclaration);
+        methods.add((new StringBuilder(String.valueOf(clazz.getImage()))).append(".").append(m.getImage()).toString());
+        System.err.println((new StringBuilder("Methods: ")).append(methods.toString()).toString());
+        return super.visit(node, data);
+    }
+
+    public static Vector methods = new Vector();
+    public static Vector methodCalls = new Vector();
+    public static HashMap methodMap = new HashMap();
+    private static Thread t;
+
+    static 
+    {
+        t = new Thread(new Runnable() {
+
+            public void run()
+            {
+                System.out.println(TestRule.methodMap.toString());
+            }
+
+        });
+        Runtime.getRuntime().addShutdownHook(t);
+    }
+}

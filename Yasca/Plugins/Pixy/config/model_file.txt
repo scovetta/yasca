@@ -1,0 +1,11 @@
+########################## strong sanitization (0)
+
+############################## weak sanitization (1)
+
+############################## multi-dependency (2)
+
+############################## inverse multi-dependency (3)
+
+############################## evil functions (4)
+
+

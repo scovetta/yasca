@@ -1,0 +1,120 @@
+Version 3.2 released 12/15/2012
+	Added OSX support
+	Modified standard HTML report to use Twitter Bootstrap theme
+	Added Markdown support for finding descriptions
+	Yasca detects PHP version installed, refuses to run for < 5.4.x
+
+Version 3.0.2 released 10/31/2012
+	PHP updated to 5.4.8
+	Updated FindBugs from 2.0 to 2.0.1
+	CppCheck upgraded from 1.53 to 1.56
+	Updated HTML report UI
+	--No longer appears to hang the browser when loading large reports.
+	--Provides status while loading
+	--jQuery upgraded from 1.7.1 to 1.8.2
+	IteratorBuilder and Iterators synced
+	--Several methods previously only available on IteratorBuilder are now on Iterators
+	--IteratorBuilder no longer uses reflection and self-closures for invoking functions.
+	----Gives significant relief to garbage collector pressure.
+	----Allows IDE’s to provide autocomplete
+	----More friendly to a hypothetical future PHP runtime that optimizes known function calls
+	\Yasca\Core\Encoding::detect now correctly returns the detected encoding.
+	Errors from external plugins are now logged consistently as ERROR.
+	FunctionPipe, Operators introduced to support functional programming
+	Batch mode improved
+	--No longer ignores other command line arguments (such as --debug)
+	--Now prints the scan duration time when a scan completes
+	--When only waiting on external plugins to finish a batch, now prints which
+	----scans are waiting on external plugins, and prints which scan it's waiting on.
+	Updated command line help
+	--Fixed typos in command line arguments
+	_class constant added to all Yasca Core classes, emulating use of class name scalars before PHP 5.5 
+	--See https://wiki.php.net/rfc/class_name_scalars
+	Async improved
+	--\Yasca\Core\Process now inherits from Async
+	--Continuations are now supported
+	--Allows subscribing events, for when the async completes
+	--Constructor now optionally accepts an exception handler
+	jQuery license text now correctly included.
+	Yasca Core Iterator classes no longer use \Closure::bind to retrieve private properties from instances of their own class.
+	Iterators::concat now uses \AppendIterator with workaround.
+	UniqueIterator removed. Iterators::unique implemented with a \CallbackFilterIterator instead.
+
+Version 3.0 released 4/31/2012
+	PHP updated to 5.4.1
+	Updated for multibyte support, SPL, Namespaces, and Autoloading
+	Now finds problems with source code in Unicode (eg Java/C# unicode variable names)
+	--Previously, non-ASCII encodings were blindly not handled or had spotty support.
+	External plugins are now executed asynchronously
+	--Multiple plugins launched while continuing built-in plugins
+	--Previously, internal scanning and other scanners were halted while waiting on an external plugin.
+	Closing the Yasca main process (PHP) now closes processes spawned by plugins eg FindBugs
+	Reporting overhaul
+	--New JsonFileReport
+	--HtmlReport replaces HTMLGroupReport
+	--HtmlReport can now save the findings as a JSON file after the fact.
+	Logging overhaul
+	--New ConsoleLog, ConsoleCsvLog
+	A single scan can now output one or many logs and one or many reports
+	FindBugs updated to 2.0
+	CppCheck updated to 1.53
+	FxCop updated to 10.0
+	Plugin results are made available as they are found, instead of buffered to the end
+	--Reports may buffer them for sorting, etc.
+	Built-In Plugin Overhaul
+	--Grep plugins converted to .php plugins. Grep.php removed.
+	--Many of the old .grep files extended to handle similar issues in other languages
+	--As a result, the overall security problem coverage is significantly improved.
+	Now can function as a PHP library and alongside other PHP libraries
+	
+
+Version 2.1 released 2009-07-07
+	Updated Cppcheck to v1.33
+	Updated PHPLint to v0.8 (2009-05-17), Windows Native
+    Added FxCop plugin (requires separate tool installation from Microsoft)
+    Fixed bugs in ClamAV, RATS plugins
+    PHP Updated to v5.3.0 (Windows)
+    New grep plugins added	
+
+
+Version 2.01 released on 2009-05-18
+	Fixed a few bugs related to calling external plugins.
+	Added a few minor plugins, including one that finds banned functions (via Microsoft SDL)
+
+Version 2.0 released on 2009-05-07
+	Redesign separating Yasca-Core from plugin packages.
+    Added ClamAV plugin
+	Added RATS plugin
+    Added new minor plugins and many new rulesets.
+
+Version 1.3 released on 2009-03-17
+    Many bug fixes - thank you to zaph, jack, and jen140
+    Added external tool JavaScript Lint - thank you to Nick Tulett for the idea
+    Added SQL Report type (SQLite)
+    Added Pre-Processing capability to Grep plugin
+    Updated PHP to 5.2.9 (Windows)
+    Updated PMD to 4.2.5
+    Updated FindBugs to version 1.3.7
+    Updated FB-Contrib to version 3.8.0
+    Added plugins for ColdFusion
+    Added support for JLint and JavaScript Lint under Linux via Wine
+    Removed startup dependencies on extensions - now only loaded if needed    
+    Added external tool "PHPLint" - thank you to Jochen Paul for the code
+    
+Version 1.2 released on 2009-01-16
+    Enhanced Grep plugin - multiple regex modifiers allowed
+    Ability to ignore certain findings
+    Added external tool Pixy
+    Added plugins for PHP
+    Added plugins for C++
+
+Version 1.1 released on 2008-12-19
+    Updated PMD to version 4.2.4 (and plugins)
+    Updated FindBugs to version 1.3.6
+    Added FB-Contrib
+    Updated PHP to 5.2.8
+    Minor bug fixes in PMD and FindBugs plugin (cross-platform)
+    Fixed line endings for Unix and Windows
+    Added new plugins
+
+Version 1.0 released on 2008-09-30

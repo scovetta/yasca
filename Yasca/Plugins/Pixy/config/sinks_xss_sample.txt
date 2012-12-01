@@ -1,0 +1,38 @@
+# sample configuration file for specifying user-defined sinks
+
+# you must specify the analysis type
+sinkType = xss
+
+# format:
+# <functionName> = <parameter list>
+# - use only lowercase characters for the function's name
+# - the parameter list's entries are separated with :
+wrap = 0
+# wrap = 0:1:3
+
+# use the method suffix for method sinks
+zap<m> = 0
+
+
+
+# EXAMPLE ############################
+
+# wrap($evil1);
+# 
+# $f->zap($evil);
+# $f->zap($evil);
+# 
+# 
+# function wrap($p) {
+#     echo $p;
+#     mysql_query($p);
+# }
+# 
+# 
+# class MyClass {
+#     function zap($p) {
+#         echo $p;
+#     }
+# }
+# 
+# 

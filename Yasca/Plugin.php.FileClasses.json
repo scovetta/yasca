@@ -1,0 +1,84 @@
+{
+	"SQL": [
+		"sql"
+	],
+    "JAVA": [
+        "java",
+        "jsp",
+        "jsw"
+    ],
+    "JAVASCRIPT": [
+        "js",
+        "html",
+        "css",
+        "js",
+        "htm",
+        "hta"
+    ],
+    "C": [
+        "c",
+        "cpp",
+        "h",
+        "cxx",
+        "cc",
+        "c++"
+    ],
+    "HTML": [
+        "html",
+        "css",
+        "js",
+        "htm",
+        "hta"
+    ],
+    "BINARY": [
+        "dll",
+        "zip",
+        "jar",
+        "ear",
+        "war",
+        "exe"
+    ],
+    "PHP": [
+        "php",
+        "php5",
+        "php4"
+    ],
+    "NET": [
+        "aspx",
+        "asp",
+        "vb",
+        "frm",
+        "res",
+        "cs",
+        "ascx",
+        "fs",
+        "vbhtml",
+        "cshtml"
+    ],
+    "COBOL": [
+        "cobol",
+        "cbl",
+        "cob"
+    ],
+    "PERL": [
+        "pl",
+        "cgi"
+    ],
+    "PYTHON": [
+        "py"
+    ],
+    "COLDFUSION": [
+        "cfm",
+        "cfml"
+    ],
+    "RUBY": [
+        "rb"
+    ],
+    "TEXT": [
+    	"txt",
+    	"readme",
+    	"log",
+    	"json",
+    	"xml"
+    ]
+}

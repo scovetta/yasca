@@ -1,0 +1,12 @@
+# sample configuration file for specifying user-defined sinks
+
+# you must specify the analysis type
+sinkType = sql
+
+# format:
+# <functionName> = <parameter list>
+# - use only lowercase characters for the function's name
+# - the parameter list's entries are separated with :
+custom_query = 0
+
+

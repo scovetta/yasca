@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<ruleset name="All ECMAScript Rules" 
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
+    xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>Every ECMAScript Rule in PMD</description>
+
+    <rule ref="rulesets/ecmascript/basic.xml"/>
+    <rule ref="rulesets/ecmascript/braces.xml"/>
+    <rule ref="rulesets/ecmascript/unnecessary.xml"/>
+</ruleset>

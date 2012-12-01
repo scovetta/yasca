@@ -1,0 +1,42 @@
+{
+    "matchOncePatterns": {
+        "vssver.scc": "Visual SourceSafe",
+        "*.pdb": "Visual Studio Debug",
+        "thumbs.db": "Windows Explorer Thumbnail",
+        "*.psd": "Raw Photoshop",
+        "hco.log": "CA Harvest Log",
+        "harvest.sig": "CA Harvest signature",
+        "*.svn-base": "SVN",
+        "all-wcprops": "SVN",
+        "*.cvsignore": "CVS",
+        ".project": "Eclipse",
+        ".classpath": "Eclipse",
+        ".buildpath": "Eclipse",
+        ".settings": "Eclipse",
+        "org.eclipse.*prefs": "Eclipse",
+        ".gitignore": "Git"
+    },
+    "matchMultiplePatterns": {
+        "*.suo": "Visual Studio",
+        "*.sln": "Visual Studio",
+        "*.csproj": "Visual Studio",
+        "*.csproj.user": "Visual Studio",
+        "*.tmp": "Temporary",
+        "*.temp": "Temporary",
+        "*dummy*": "Temporary",
+        "*.old": "Backup",
+        "*.bak": "Backup",
+        "*.save": "Backup",
+        "*.backup": "Backup",
+        "*.orig": "Backup",
+        "*.000": "Temporary",
+        "temp.*": "Temporary",
+        "*.copy": "Copy\/paste",
+        "Copy of*": "Windows XP and earlier copy\/paste",
+        "* - Copy": "Windows Vista and newer copy\/paste",
+        "_*": "Temporary"
+    },
+    "matchExceptionPatterns": [
+        "__*__.py"
+    ]
+}

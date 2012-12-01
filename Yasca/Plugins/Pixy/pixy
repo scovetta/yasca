@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -d resources ]; then
+    cd resources/utility/pixy
+fi
+
+if [ -d ../../../plugins/pixy ]; then
+    cp ../../../plugins/pixy/* ./config
+fi
+
+mypath=`pwd`
+java -Xmx500m -Xms500m -Dpixy.home="$mypath/" -jar pixy.jar -a -A -y xss:file:sql $1 $2 $3 2>&1
+rm graphs/*.dot > /dev/null 2>&1
+rm graphs/*.txt > /dev/null 2>&1

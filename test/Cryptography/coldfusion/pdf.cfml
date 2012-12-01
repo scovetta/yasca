@@ -1,0 +1,1 @@
+<cfpdf action="protect" source="Book.pdf" encrypt="foo" destination="MysteryBook.pdf" overwrite="yes" newOwnerPassword="pssst" permissions="AllowDegradedPrinting">

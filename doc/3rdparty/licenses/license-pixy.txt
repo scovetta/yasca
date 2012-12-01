@@ -1,0 +1,4 @@
+jflex - GPL
+cup   - custom license, derived from "Standard ML of New Jersey", GPL-compatible
+cli   - apache license
+rest  - GPL

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<ruleset name="Yasca Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>
+        This ruleset contains custom rules written for Yasca.
+    </description>
+
+    <!-- We'll use the entire 'strings' ruleset -->
+    <rule ref="rulesets/java/strings.xml"/>
+    <rule ref="rulesets/java/sunsecure.xml"/>
+    <rule ref="rulesets/java/optimizations.xml"/>
+    <rule ref="rulesets/java/unusedcode.xml"/>
+    <rule ref="rulesets/java/basic.xml"/>
+    <rule ref="rulesets/jsp/basic.xml"/>
+    <rule ref="rulesets/ecmascript/basic.xml"/>
+    <rule ref="rulesets/xml/basic.xml"/>
+
+    <rule name="Use of non-cryptographic PRNG"
+          message="Avoid using Math.random() where true randomness is required."
+          class="net.sourceforge.pmd.lang.rule.XPathRule"
+          externalInfoUrl="#"
+          language="java">
+        <description>
+            The Math.random() PRNG is not strong from a cryptographic point of view. If true randomomness is expected, use SecureRandom instead.
+        </description>
+        <priority>3</priority>
+        <properties>
+            <property name="xpath">
+                <value>
+<![CDATA[
+//PrimaryPrefix/Name[@Image='Math.random']
+]]>
+             </value>
+          </property>
+      </properties>
+      <example>
+  <![CDATA[
+public void doSomething() {
+    double d = Math.random();
+}
+ ]]>
+      </example>
+    </rule>
+
+    <rule name="Member Field Race Condition"
+          message="Servlet member fields may allow one user to see another user's data."
+          class="net.sourceforge.pmd.lang.rule.XPathRule"
+          externalInfoUrl="http://www.owasp.org/index.php/Member_Field_Race_Condition"
+          language="java">
+      <description>
+Many Servlet developers do not understand that, unless a Servlet implements the SingleThreadModel
+interface, the Servlet is a singleton; there is only one instance of the Servlet, and that single
+instance is used and re-used to handle multiple requests that are processed simultaneously by
+different threads.
+
+A common result of this misunderstanding is that developers use Servlet member fields in such a
+way that one user may inadvertently see another user's data. In other words, storing user data
+in Servlet member fields introduces a data access race condition.
+      </description>
+      <priority>2</priority>
+      <properties>
+          <property name="xpath">
+              <value>
+<![CDATA[
+//MethodDeclaration[@MethodName='service' or @MethodName='doGet' or @MethodName='doPost']
+/.//Statement/StatementExpression/PrimaryExpression/PrimaryPrefix/Name
+[(//ClassOrInterfaceBody/ClassOrInterfaceBodyDeclaration/FieldDeclaration[@Static!='true']
+  /VariableDeclarator/VariableDeclaratorId/@Image)=@Image]
+]]>
+             </value>
+          </property>
+      </properties>
+      <example>
+<![CDATA[
+class SimpleServlet extends Servlet {
+	Foo myFoo = null;
+
+	public void doGet(HttpServletRequest req, HttpServletRespose res) {
+		if (myFoo == null) {
+			myFoo = new Foo();
+		}
+		myFoo.setValue(1);
+		int value = myFoo.getValue(); 	// could be 1 or 2 depending on other threads
+		myFoo.setValue(2);
+	}
+}
+]]>
+      </example>
+    </rule>
+
+    <rule name="Writing to a File"
+          message="Writing to a local file."
+          class="net.sourceforge.pmd.lang.rule.XPathRule"
+          externalInfoUrl="#"
+          language="java">
+      <description>
+
+      </description>
+      <priority>3</priority>
+      <properties>
+          <property name="xpath">
+              <value>
+<![CDATA[
+//ReferenceType/ClassOrInterfaceType[@Image='FileOutputStream' or @Image='FileWriter']
+]]>
+             </value>
+          </property>
+      </properties>
+      <example>
+<![CDATA[
+]]>
+      </example>
+    </rule>
+
+</ruleset>
+

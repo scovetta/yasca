@@ -1,0 +1,48 @@
+{ 
+	"FindBugs" : {
+		"Dead store to local variable" : {
+			"severity" : 5
+		},
+		"Switch statement found where one case falls through to the next case" : {
+			"severity" : 4
+		},
+		"Write to static field from instance method" : {
+			"severity": 4
+		},
+		"Method might ignore exception" : {
+			"severity": 4
+		},
+		"Nullcheck of value previously dereferenced" : {
+			"severity" : 4
+		},
+		"Class names should start with an upper case letter" : {
+			"severity" : 3
+		}
+	},
+	"PMD" : {
+		"EmptyTryBlock" : {
+			"severity" : 4,
+			"category": "Empty Try Block"
+		},
+		"EmptyCatchBlock" : {
+			"severity" : 4,
+			"category": "Empty Catch Block"
+		},
+		"EmptyFinallyBlock" : {
+			"severity" : 4,
+			"category": "Empty Finally Block"
+		},
+		"BrokenNullCheck" : {
+			"severity": 4,
+			"category": "Broken Null Check"
+		}
+	},
+	"CppCheck" : {
+		"id" : {
+			"category": "General"
+		},
+		"unusedFunction" : {
+			"severity" : 5
+		}
+	}
+}

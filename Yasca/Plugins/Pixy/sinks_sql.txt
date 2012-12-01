@@ -1,0 +1,9 @@
+# standard SQL sinks
+
+# format:
+# <functionName> = <parameter list>
+# - use only lowercase characters for the function's name
+# - the parameter list's entries are separated with :
+mysql_query = 0
+# xyz = 0:1:3
+

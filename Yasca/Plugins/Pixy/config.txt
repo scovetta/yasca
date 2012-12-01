@@ -1,0 +1,17 @@
+# this is a configuration file, as you might have guessed
+
+# specify your PHP include path here, separated by ":";
+# you can also comment it out if you don't have PHP installed
+#includePath=/opt/lampp/lib/php
+#includePath=/opt/lampp/lib/php:a_second_one:and_a_third_one
+
+# path to php binary 
+# (used by literal analysis for simulating calls to builtin functions);
+# comment it out if you don't want this, or if you don't have php installed:
+#phpBin=../../php.exe
+
+# home directory of FSA Utilities; leave blank if you don't want to use them
+# (= default, as this feature is still experimental)
+# fsaHome=/path/to/fsa-utils
+
+
