@@ -11,6 +11,6 @@ Sorry, but Yasca requires PHP 5.4.0 or later with multibyte support.
 EOT;
     exit(1);
 } else {
-    include('main.php');
+    include('Main.php');
 }
 ?>
