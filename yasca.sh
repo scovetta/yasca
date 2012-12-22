@@ -12,8 +12,5 @@ else
   PHP=php
 fi
 
-ROOT=$(cd "$(dirname "$0")"; pwd)
-cd $ROOT/..
-
 # Start Yasca
-$PHP Yasca/Start.php $*
+$PHP -c bin/php-linux.ini Yasca/Start.php $*

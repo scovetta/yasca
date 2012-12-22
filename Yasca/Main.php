@@ -144,7 +144,8 @@ foreach (
         exit(0);
 
     } elseif ($switch === '--reportInstalled' ||
-              $switch === '--reportsInstalled'
+              $switch === '--reportsInstalled' ||
+              $switch === '--installedReports'
     ){
         foreach(\Yasca\Report::getInstalledReports() as $report){
             print("$report\n");
