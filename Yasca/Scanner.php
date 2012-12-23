@@ -24,16 +24,13 @@ final class Scanner {
 	use CallablePropertiesAsMethods;
 
 	const SECONDS_PER_NOTIFY = 30;
-	const VERSION = '3.0.3';
+	const VERSION = '3.0.4';
 
 	private static $adjustments;
 
 	public function __construct($options){
-		//PHP 5.4.8 does not have a way to immediately invoke anonymous functions
-		$c = static function(callable $c){return $c();};
-
 		list($subscribeIfCloseable, $closeSubscribedCloseables) =
-			$c(static function(){
+			Operators::invoke(static function(){
 				$closeables = new \SplObjectStorage();
 				return [
 					static function($object) use ($closeables){
@@ -55,7 +52,7 @@ final class Scanner {
 			});
 
 		list($fireLogEvent, $fireResultEvent) =
-			$c(function() use ($subscribeIfCloseable){
+			Operators::invoke(function() use ($subscribeIfCloseable){
 				$newEvent = function($name) use ($subscribeIfCloseable){
 					$event = new SplSubjectAdapter();
 					$this->{"attach{$name}Observer"} = function(\SplObserver $observer) use ($event, $subscribeIfCloseable){
@@ -103,10 +100,11 @@ final class Scanner {
 			->wrap(static::$adjustments)
 			->pipe([Iterators::_class, 'elementAtOrNull'], $result->pluginName)
 			->pipe([Iterators::_class, 'elementAtOrNull'], $result->category)
-			->pipe([Operators::_class, 'match'],
-				[Operators::curry([Operators::_class,'notEquals'], null), [$result, 'setOptions']],
-				[Operators::identity(true), [Operators::_class,'identity']]
-			);
+			->pipe(static function($options) use ($result){
+				if ($options !== null){
+					$result->setOptions($options);
+				}
+			});
 
 			//Get unsafeSourceCode if needed, and then make the filename relative
 			//to the scan directory
@@ -170,12 +168,13 @@ final class Scanner {
 				->select(static function($literal){return \preg_quote($literal, '`');})
 				->toFunctionPipe()
 				->pipe([Iterators::_class, 'join'], '|')
-				->pipe([Operators::_class, 'match'],
-					[[Operators::_class, 'isNullOrEmpty'], Operators::identity(null)],
-					[Operators::identity(true), static function($string){
+				->pipe(static function($string){
+					if (Operators::isNullOrEmpty($string) === true){
+						return null;
+					} else {
 						return "`^(?!.*($string).*$)`u";
-					}]
-				)
+					}
+				})
 				->unwrap(),
 				(new \Yasca\Core\FunctionPipe)
 				->wrap($options)
@@ -184,12 +183,13 @@ final class Scanner {
 				->select(static function($literal){return \preg_quote($literal, '`');})
 				->toFunctionPipe()
 				->pipe([Iterators::_class, 'join'], '|')
-				->pipe([Operators::_class, 'match'],
-					[[Operators::_class, 'isNullOrEmpty'], Operators::identity(null)],
-					[Operators::identity(true), static function($string){
+				->pipe(static function($string){
+					if (Operators::isNullOrEmpty($string) === true){
+						return null;
+					} else {
 						return "`($string)`u";
-					}]
-				)
+					}
+				})
 				->unwrap()
 			);
 
@@ -226,12 +226,13 @@ final class Scanner {
 					})
 					->toFunctionPipe()
 					->pipe([Iterators::_class, 'join'], '|')
-					->pipe([Operators::_class, 'match'],
-						[[Operators::_class, 'isNullOrEmpty'], Operators::identity(null)],
-						[Operators::identity(true), static function($string){
+					->pipe(static function($string){
+						if (Operators::isNullOrEmpty($string) === true){
+							return null;
+						} else {
 							return "`\.($string)$`ui";
-						}]
-					)
+						}
+					})
 					->unwrap();
 				},
 				(new \Yasca\Core\FunctionPipe)
@@ -242,12 +243,13 @@ final class Scanner {
 				->select(static function($literal){return \preg_quote($literal, '`');})
 				->toFunctionPipe()
 				->pipe([Iterators::_class, 'join'], '|')
-				->pipe([Operators::_class, 'match'],
-					[[Operators::_class, 'isNullOrEmpty'], Operators::identity(null)],
-					[Operators::identity(true), static function($string){
+				->pipe(static function($string){
+					if (Operators::isNullOrEmpty($string) === true){
+						return null;
+					} else {
 						return "`(?<!$string)$`ui";
-					}]
-				)
+					}
+				})
 				->unwrap(),
 				(new \Yasca\Core\FunctionPipe)
 				->wrap($options)
@@ -257,12 +259,13 @@ final class Scanner {
 				->select(static function($literal){return \preg_quote($literal, '`');})
 				->toFunctionPipe()
 				->pipe([Iterators::_class, 'join'], '|')
-				->pipe([Operators::_class, 'match'],
-					[[Operators::_class, 'isNullOrEmpty'], Operators::identity(null)],
-					[Operators::identity(true), static function($string){
+				->pipe(static function($string){
+					if (Operators::isNullOrEmpty($string) === true){
+						return null;
+					} else {
 						return "`($string)$`ui";
-					}]
-				)
+					}
+				})
 				->unwrap()
 			);
 
@@ -285,10 +288,7 @@ final class Scanner {
 						return Iterators::ensureIsIterator([$results]);
 					}
 				} elseif ($results instanceof Wrapper){
-					while($results instanceof Wrapper){
-						$results = $results->unwrap();
-					}
-					return $processResults($results);
+					return $processResults($results->unwrap());
 				} else {
 					return (new \Yasca\Core\IteratorBuilder)
 					->from($results)
@@ -449,7 +449,10 @@ final class Scanner {
 			}
 		};
 
-		$this->execute = Operators::compose($this->executeAsync,[Operators::_class, 'call'], 'result');
+		$this->execute = function(){
+			$f = $this->executeAsync;
+			return $f()->result();
+		};
 	}
 }
 \Closure::bind(

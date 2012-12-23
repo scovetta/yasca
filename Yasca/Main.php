@@ -75,8 +75,8 @@ Perform analysis of program source code.
   --debug                        Throw exceptions instead of logging them
 
 Examples:
-  php.exe Main.php c:/source_code
-  php.exe Main.php /opt/dev/source_code
+  yasca.bat c:\\source_code
+  yasca.sh /opt/dev/source_code
   php.exe Main.php --pluginsIgnore,FindBugs,PMD,Antic,JLint /opt/dev/source_code
   php.exe Main.php --log,ConsoleLog,7 "c:/orange/"
   php.exe Main.php --onlyPlugins,BuiltIn c:/example/
@@ -105,7 +105,7 @@ foreach (
 
     as $switch => $options
 ){
-    //As of PHP 5.4.8, switch() uses loose comparision instead of strict.
+    //As of PHP 5.4, switch() uses loose comparision instead of strict.
     //Use if/elseif instead.
     if          ($switch === '-h'         ||
               $switch === '--help'  ||
@@ -211,11 +211,11 @@ foreach (
 
     } elseif ($switch === '--ignoredPlugin'  ||
               $switch === '--ignoredPlugins' ||
-               $switch === '--ignorePlugin'     ||
-              $switch === '--ignorePlugins'     ||
-              $switch === '--pluginIgnored'     ||
+              $switch === '--ignorePlugin'   ||
+              $switch === '--ignorePlugins'  ||
+              $switch === '--pluginIgnored'  ||
               $switch === '--pluginsIgnored' ||
-              $switch === '--pluginIgnore'     ||
+              $switch === '--pluginIgnore'   ||
               $switch === '--pluginsIgnore'
     ){
         $scannerOptions['pluginsIgnore'] = $options;

@@ -67,7 +67,7 @@ abstract class Plugin {
 		return (new \Yasca\Core\IteratorBuilder)
 		->from($this->getSupportedFileTypes())
 		->where(static function($supportedExt) use ($ext){
-			//PHP 5.4.8 does not have a multibyte-safe case insensitive compare
+			//PHP 5.4 does not have a multibyte-safe case insensitive compare
 			return \mb_strlen($supportedExt) === \mb_strlen($ext) &&
 				   \mb_stripos($supportedExt, $ext) === 0;
 		})
