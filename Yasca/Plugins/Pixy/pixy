@@ -9,6 +9,6 @@ if [ -d ../../../plugins/pixy ]; then
 fi
 
 mypath=`pwd`
-java -Xmx1000m -Xms1000m -Dpixy.home="$mypath/" -jar pixy.jar -a -A -y xss:file:sql $1 $2 $3 2>&1
+java -Xmx1500m -Xms1500m -Dpixy.home="$mypath/" -jar pixy.jar -a -A -y xss:file:sql $1 $2 $3 2>&1
 rm graphs/*.dot > /dev/null 2>&1
 rm graphs/*.txt > /dev/null 2>&1
