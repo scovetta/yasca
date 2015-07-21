@@ -30,26 +30,13 @@ if (!Date.now){
 	saveJsonReport = (function(){
 		var saveAs, bb, features, message;
 
-		if (  !(window.BlobBuilder 	  ||
-				window.WebKitBlobBuilder ||
-				window.MozBlobBuilder 	  ||
-				window.MSBlobBuilder
-			   ) ||
-
-			   (
-					!((window.URL || window.webkitURL || {}).createObjectURL) &&
+		if (  (	!((window.URL || window.webkitURL || {}).createObjectURL) &&
 					!window.saveAs
-			   ) ||
+				) ||
 
-				!window.JSON || !window.JSON.stringify){
+			!window.JSON || !window.JSON.stringify){
 
 			features = [];
-			if (!(window.BlobBuilder 	  ||
-				  window.WebKitBlobBuilder ||
-				  window.MozBlobBuilder 	  ||
-				  window.MSBlobBuilder)){
-				features.push('File API');
-			}
 			if (!((window.URL || window.webkitURL || {}).createObjectURL)){
 				features.push('File URL API');
 			}
@@ -75,19 +62,21 @@ if (!Date.now){
 			saveAs =
 				window.saveAs	  ||
 				function(blob, filename){
-					alert('Please save (or rename) the result as a .json file.');
-					window.open((window.URL || window.webkitURL).createObjectURL(blob), filename);
+					var a = document.createElement("a");
+					document.body.appendChild(a);
+					a.style = "display: none";
+					var url = (window.URL || window.webkitURL).createObjectURL(blob);
+					a.href = url;
+					a.download = filename;
+					a.click();
+					(window.URL || window.webkitURL).revokeObjectURL(url);
 				};
 
 			supports.save = true;
 
 			return function(){
-				bb = new (window.BlobBuilder 	   ||
-						  window.WebKitBlobBuilder ||
-						  window.MozBlobBuilder    ||
-						  window.MSBlobBuilder)();
-				bb.append(JSON.stringify(self.results));
-				saveAs(bb.getBlob('application/x-json'), 'results.json');
+				bb = new Blob([JSON.stringify(self.results)], {type: 'application/x-json'});
+				saveAs(bb, 'results.json');
 			};
 		}
 	}());

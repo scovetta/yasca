@@ -24,7 +24,7 @@ final class Scanner {
 	use CallablePropertiesAsMethods;
 
 	const SECONDS_PER_NOTIFY = 30;
-	const VERSION = '3.0.4';
+	const VERSION = '3.0.5';
 
 	private static $adjustments;
 
