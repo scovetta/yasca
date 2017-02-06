@@ -153,10 +153,7 @@ foreach (
             print("$report\n");
         }
         exit(0);
-
-    } elseif ($switch === '--failLevel'){
-        $scannerOptions['failLevel'] = $options;
-
+    
     } elseif ($switch === '--excludedFiles'){
         $scannerOptions['excludedFiles'] = $options;
 
