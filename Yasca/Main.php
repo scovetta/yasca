@@ -62,6 +62,14 @@ Perform analysis of program source code.
   --installedLogs                Do not perform scan. Print names of installed logs
   --logSilent, --silent          Do not add default console log.
 
+  --failLevel,LEVEL              Causes the execution to return a failure if a finding 
+                                 of this severity or higher is found. Useful for CI 
+                                 pipelines or automated builds.  Expects a number.
+                                 1 = Critical
+                                 2 = High
+                                 3 = Medium 
+                                 4 = Low
+                                 5 = Info
   --excludedFiles(,FILES)+       Files to be excluded from the scanning
 
   -r,TYPE(,OPTIONS)*
@@ -153,7 +161,10 @@ foreach (
             print("$report\n");
         }
         exit(0);
-    
+
+    } elseif ($switch === '--failLevel'){
+        $scannerOptions['failLevel'] = \array_shift($options);
+
     } elseif ($switch === '--excludedFiles'){
         $scannerOptions['excludedFiles'] = $options;
 

@@ -86,6 +86,19 @@ final class Scanner {
 			->wrap($options)
 			->pipe([Iterators::_class,'elementAtOrNull'], 'excludedFiles')
 			->unwrap();
+
+		$failLevel = (new \Yasca\Core\FunctionPipe)
+			->wrap($options)
+			->pipe([Iterators::_class,'elementAtOrNull'], 'failLevel')
+			->unwrap();
+		$failLevel = $failLevel ?: 0;
+
+		$this->failing = false;
+
+		$setFailing = function() {
+			$this->failing = true;
+		};
+
 		$makeRelative =
 			//Make filenames relative when publishing a result
 			(new \Yasca\Core\FunctionPipe)
@@ -98,7 +111,7 @@ final class Scanner {
 			->unwrap();
 
 		//Wrap Result event trigger to make changes to each Result
-		$fireResultEvent = static function(Result $result) use ($fireResultEvent, $makeRelative){
+		$fireResultEvent = static function(Result $result) use ($fireResultEvent, $makeRelative, $failLevel, $setFailing){
 			//Make adjustments based on adjustments data
 			(new \Yasca\Core\FunctionPipe)
 			->wrap(static::$adjustments)
@@ -109,6 +122,9 @@ final class Scanner {
 					$result->setOptions($options);
 				}
 			});
+			if ($result->severity <= $failLevel) {
+				$setFailing();
+			}
 			//Get unsafeSourceCode if needed, and then make the filename relative
 			//to the scan directory
 			if (isset($result->filename) === true && !Operators::isNullOrEmpty($result->filename)){
@@ -457,7 +473,8 @@ final class Scanner {
 
 		$this->execute = function(){
 			$f = $this->executeAsync;
-			return $f()->result();
+			$f()->result();
+			exit($this->failing ? 1 : 0);
 		};
 	}
 }
