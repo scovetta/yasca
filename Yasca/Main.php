@@ -62,6 +62,8 @@ Perform analysis of program source code.
   --installedLogs                Do not perform scan. Print names of installed logs
   --logSilent, --silent          Do not add default console log.
 
+  --excludedFiles(,FILES)+       Files to be excluded from the scanning
+
   -r,TYPE(,OPTIONS)*
   --report,TYPE(,OPTIONS)*
           Use the TYPE of report, and provides OPTIONS to that type
@@ -151,6 +153,12 @@ foreach (
             print("$report\n");
         }
         exit(0);
+
+    } elseif ($switch === '--failLevel'){
+        $scannerOptions['failLevel'] = $options;
+
+    } elseif ($switch === '--excludedFiles'){
+        $scannerOptions['excludedFiles'] = $options;
 
 
     } elseif ($switch === '--batch'){
