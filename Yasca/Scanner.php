@@ -81,6 +81,23 @@ final class Scanner {
 			->pipe([Iterators::_class,'elementAtOrNull'], 'targetDirectory')
 			->pipe('\realpath')
 			->unwrap();
+		$excludedFiles =
+			(new \Yasca\Core\FunctionPipe)
+			->wrap($options)
+			->pipe([Iterators::_class,'elementAtOrNull'], 'excludedFiles')
+			->unwrap();
+
+		$failLevel = (new \Yasca\Core\FunctionPipe)
+			->wrap($options)
+			->pipe([Iterators::_class,'elementAtOrNull'], 'failLevel')
+			->unwrap();
+		$failLevel = $failLevel ?: 0;
+
+		$this->failing = false;
+
+		$setFailing = function() {
+			$this->failing = true;
+		};
 
 		$makeRelative =
 			//Make filenames relative when publishing a result
@@ -94,7 +111,7 @@ final class Scanner {
 			->unwrap();
 
 		//Wrap Result event trigger to make changes to each Result
-		$fireResultEvent = static function(Result $result) use ($fireResultEvent, $makeRelative){
+		$fireResultEvent = static function(Result $result) use ($fireResultEvent, $makeRelative, $failLevel, $setFailing){
 			//Make adjustments based on adjustments data
 			(new \Yasca\Core\FunctionPipe)
 			->wrap(static::$adjustments)
@@ -105,7 +122,9 @@ final class Scanner {
 					$result->setOptions($options);
 				}
 			});
-
+			if ($result->severity <= $failLevel) {
+				$setFailing();
+			}
 			//Get unsafeSourceCode if needed, and then make the filename relative
 			//to the scan directory
 			if (isset($result->filename) === true && !Operators::isNullOrEmpty($result->filename)){
@@ -301,7 +320,7 @@ final class Scanner {
 			$processResults,
 			$closeSubscribedCloseables, $debug,
 			$makeRelative, $createPlugins,
-			$targetDirectory, $createTargetIterator
+			$targetDirectory, $createTargetIterator, $excludedFiles
 		){
 			try {
 				$fireLogEvent(['Yasca ' . Scanner::VERSION . ' - http://www.yasca.org/ - Michael V. Scovetta', \Yasca\Logs\Level::INFO]);
@@ -309,6 +328,7 @@ final class Scanner {
 
 
 				$plugins = $createPlugins();
+				$excludedFiles = $excludedFiles ?: [];
 
 				$multicasts = Iterators::elementAtOrNull($plugins, __NAMESPACE__ . '\MulticastPlugin');
 
@@ -316,83 +336,85 @@ final class Scanner {
 				$filesProcessed = 0;
 				$awaits = [];
 				foreach($createTargetIterator($plugins) as $filePath => $targetFileInfo){
-					$fireLogEvent(["Checking file {$makeRelative($filePath)}", \Yasca\Logs\Level::DEBUG]);
+					if (!\in_array($makeRelative($filePath), $excludedFiles)) {
+						$fireLogEvent(["Checking file {$makeRelative($filePath)}", \Yasca\Logs\Level::DEBUG]);
 
-					$n = \time();
-					if ($n - $lastStatusReportedTime > self::SECONDS_PER_NOTIFY){
-						$fireLogEvent(["$filesProcessed files scanned", \Yasca\Logs\Level::INFO]);
-						$lastStatusReportedTime = $n;
-					}
+						$n = \time();
+						if ($n - $lastStatusReportedTime > self::SECONDS_PER_NOTIFY){
+							$fireLogEvent(["$filesProcessed files scanned", \Yasca\Logs\Level::INFO]);
+							$lastStatusReportedTime = $n;
+						}
 
-					$ext = $targetFileInfo->getExtension();
-					$getFileContents =
-						(new \Yasca\Core\FunctionPipe)
-						->wrap($filePath)
-						->pipeLast([Operators::_class,'curry'], [Encoding::_class, 'getFileContentsAsArray'])
-						->pipe([Operators::_class,'lazy'])
-						->unwrap();
+						$ext = $targetFileInfo->getExtension();
+						$getFileContents =
+							(new \Yasca\Core\FunctionPipe)
+							->wrap($filePath)
+							->pipeLast([Operators::_class,'curry'], [Encoding::_class, 'getFileContentsAsArray'])
+							->pipe([Operators::_class,'lazy'])
+							->unwrap();
 
-					$awaits =
-						(new \Yasca\Core\IteratorBuilder)
-						->from($awaits)
-						->concat(
-							//Multicast plugin results
+						$awaits =
 							(new \Yasca\Core\IteratorBuilder)
-							->from($multicasts)
+							->from($awaits)
+							->concat(
+								//Multicast plugin results
+								(new \Yasca\Core\IteratorBuilder)
+								->from($multicasts)
 
-							//Make a copy to allow removing elements iterated over
-							->toFunctionPipe()
-							->pipe([Iterators::_class,'toList'])
-							->toIteratorBuilder()
+								//Make a copy to allow removing elements iterated over
+								->toFunctionPipe()
+								->pipe([Iterators::_class,'toList'])
+								->toIteratorBuilder()
 
-							->where(static function($plugin) use ($ext){
-								return $plugin->supportsExtension($ext);
-							})
-							->select(static function($plugin) use ($multicasts, $targetDirectory){
-								$multicasts->detach($plugin);
-								return $plugin->getResultIterator($targetDirectory);
-							}),
+								->where(static function($plugin) use ($ext){
+									return $plugin->supportsExtension($ext);
+								})
+								->select(static function($plugin) use ($multicasts, $targetDirectory){
+									$multicasts->detach($plugin);
+									return $plugin->getResultIterator($targetDirectory);
+								}),
 
-							//Single file path plugin results
-							(new \Yasca\Core\FunctionPipe)
-							->wrap($plugins)
-							->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\SingleFilePathPlugin')
-							->toIteratorBuilder()
-							->where(static function($plugin) use ($ext){
-								return $plugin->supportsExtension($ext);
-							})
-							->select(static function($plugin) use ($filePath){
-								return $plugin->getResultIterator($filePath);
-							}),
+								//Single file path plugin results
+								(new \Yasca\Core\FunctionPipe)
+								->wrap($plugins)
+								->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\SingleFilePathPlugin')
+								->toIteratorBuilder()
+								->where(static function($plugin) use ($ext){
+									return $plugin->supportsExtension($ext);
+								})
+								->select(static function($plugin) use ($filePath){
+									return $plugin->getResultIterator($filePath);
+								}),
 
-							//Single file contents plugin results
-							(new \Yasca\Core\FunctionPipe)
-							->wrap($plugins)
-							->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\SingleFileContentsPlugin')
-							->toIteratorBuilder()
-							->where(static function($plugin) use ($ext){
-								return $plugin->supportsExtension($ext);
-							})
-							->select(static function($plugin) use ($getFileContents, $filePath){
-								return $plugin->getResultIterator($getFileContents(), $filePath);
-							})
-						)
-						->selectMany($processResults)
-						->toList();
+								//Single file contents plugin results
+								(new \Yasca\Core\FunctionPipe)
+								->wrap($plugins)
+								->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\SingleFileContentsPlugin')
+								->toIteratorBuilder()
+								->where(static function($plugin) use ($ext){
+									return $plugin->supportsExtension($ext);
+								})
+								->select(static function($plugin) use ($getFileContents, $filePath){
+									return $plugin->getResultIterator($getFileContents(), $filePath);
+								})
+							)
+							->selectMany($processResults)
+							->toList();
 
-					(new \Yasca\Core\FunctionPipe)
-					->wrap($plugins)
-					->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\AggregateFileContentsPlugin')
-					->toIteratorBuilder()
-					->where(static function($plugin) use ($ext){
-						return $plugin->supportsExtension($ext);
-					})
-					->forAll(static function($plugin) use ($getFileContents, $filePath){
-						$plugin->apply($getFileContents(), $filePath);
-					});
+						(new \Yasca\Core\FunctionPipe)
+						->wrap($plugins)
+						->pipe([Iterators::_class, 'elementAtOrNull'], __NAMESPACE__ . '\AggregateFileContentsPlugin')
+						->toIteratorBuilder()
+						->where(static function($plugin) use ($ext){
+							return $plugin->supportsExtension($ext);
+						})
+						->forAll(static function($plugin) use ($getFileContents, $filePath){
+							$plugin->apply($getFileContents(), $filePath);
+						});
 
-					Async::tickAll();
-					$filesProcessed += 1;
+						Async::tickAll();
+						$filesProcessed += 1;
+					}
 				}
 				$fireLogEvent(['Finished with files. Gathering results from Aggregate plugins', \Yasca\Logs\Level::DEBUG]);
 
@@ -451,7 +473,8 @@ final class Scanner {
 
 		$this->execute = function(){
 			$f = $this->executeAsync;
-			return $f()->result();
+			$f()->result();
+			exit($this->failing ? 1 : 0);
 		};
 	}
 }
