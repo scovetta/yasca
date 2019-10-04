@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Detect the operating system (Linux vs. OSX)
 lowercase(){
